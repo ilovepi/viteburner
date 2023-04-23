@@ -1,4 +1,5 @@
 import { NS } from '@ns';
+import { minute_ms, second_ms } from './consts';
 
 export function find_all_servers(ns: NS) {
   const visited: string[] = [];
@@ -48,4 +49,31 @@ export function can_hack(ns: NS, target: string) {
 export function can_root(ns: NS, target: string) {
   const ports = ns.getServerNumPortsRequired(target);
   return ports <= crack_counts(ns);
+}
+
+export async function waitForHackingLevel(ns: NS, level: number) {
+  while (ns.getHackingLevel() < level) {
+    ns.singularity.universityCourse('rothman university', 'study computer science', true);
+    await ns.sleep(minute_ms);
+  }
+}
+
+export async function waitForMoney(ns: NS, amount: number) {
+  while (ns.getServerMoneyAvailable('home') < amount) {
+    await ns.sleep(minute_ms);
+  }
+}
+
+export async function waitForInviteAndJoin(ns: NS, faction: string) {
+  while (!ns.singularity.checkFactionInvitations().includes(faction)) {
+    await ns.sleep(second_ms);
+  }
+  ns.singularity.joinFaction(faction);
+}
+
+export async function waitForPidAndJoin(ns: NS, pid: number, faction: string) {
+  while (ns.isRunning(pid)) {
+    await ns.sleep(second_ms);
+  }
+  await waitForInviteAndJoin(ns, faction);
 }
