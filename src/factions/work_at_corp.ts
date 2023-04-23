@@ -1,4 +1,4 @@
-import { waitForInviteAndJoin } from '@/factions/Faction';
+import { waitForInviteAndJoin } from '@/utils/utils';
 import { NS } from '@ns';
 
 const required_rep = 400_000;
@@ -14,6 +14,7 @@ export async function main(ns: NS) {
     ns.tprint(`Usage: run ${ns.getScriptName()} COMAPNY`);
     ns.tprint(`Example:`);
     ns.tprint(`> run ${ns.getScriptName()} ECorp`);
+    return;
   }
 
   const corp = args.company.toString();
