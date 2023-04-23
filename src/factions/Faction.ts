@@ -1,5 +1,6 @@
 import { Augmentation } from '@/utils/Augment';
 import { minute_ms, second_ms } from '@/utils/consts';
+import { waitForHackingLevel, waitForInviteAndJoin, waitForMoney, waitForPidAndJoin } from '@/utils/utils';
 import { CityName, NS } from '@ns';
 
 export enum early {
@@ -148,27 +149,14 @@ const FactionPrereqs = new Map([
 
 async function joinCybersec(ns: NS) {
   // get min hacking
-  await trainHackingLevel(ns, 50);
+  await waitForHackingLevel(ns, 50);
   // backdoor csec server
   ns.exec('/utils/backdoor.js', 'home');
 }
 
-async function trainHackingLevel(ns: NS, level: number) {
-  while (ns.getHackingLevel() < level) {
-    ns.singularity.universityCourse('rothman university', 'study computer science', true);
-    await ns.sleep(1000 * 60);
-  }
-}
-
-async function waitForMoney(ns: NS, amount: number) {
-  while (ns.getServerMoneyAvailable('home') < amount) {
-    await ns.sleep(minute_ms);
-  }
-}
-
 async function joinTiaDiHui(ns: NS) {
   // hacking >50
-  await trainHackingLevel(ns, 50);
+  await waitForHackingLevel(ns, 50);
 
   // accumulate $1M
   await waitForMoney(ns, 1_000_000);
@@ -180,23 +168,7 @@ async function joinTiaDiHui(ns: NS) {
 }
 
 async function joinNetburners(ns: NS) {
-  //TODO: make this more efficient by buying 10 servers and splitting any purchases between them
-  const hacknet = ns.hacknet;
-  await trainHackingLevel(ns, 80);
-  // do we need to buy a node?
-  if (hacknet.numNodes() == 0) {
-    await waitForMoney(ns, hacknet.getPurchaseNodeCost());
-    hacknet.purchaseNode();
-  }
-  // 100 hacknet levels
-  await waitForMoney(ns, hacknet.getLevelUpgradeCost(0, 3));
-  hacknet.upgradeLevel(0, 100);
-  // 8GM RAM in hacknet
-  await waitForMoney(ns, hacknet.getRamUpgradeCost(0, 3));
-  hacknet.upgradeRam(0, 3);
-  // 4 hacknet cores
-  await waitForMoney(ns, hacknet.getCoreUpgradeCost(0, 3));
-  hacknet.upgradeCore(0, 3);
+  return ns.exec('/factions/join_netburners.js', 'home');
 }
 
 // cities
@@ -252,21 +224,16 @@ async function joinDeaedalus(ns: NS) {}
 async function joinIlluminati(ns: NS) {}
 
 async function joinCorp(ns: NS, corp: string) {
- const pid =  ns.exec('/work/work.js', 'home');
+  return ns.exec('/factions/work_at_corp.js', 'home', 1, '--company', corp);
 }
 
 async function joinHacking(ns: NS, host: string, faction: string) {
   while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(host)) {
     await ns.sleep(second_ms);
   }
-  if (!ns.getServer(host).backdoorInstalled) {
-    const pid = ns.exec('/utils/backdoor.js', 'home');
-    while (ns.isRunning(pid)) {
-      await ns.sleep(second_ms);
-    }
-  }
-  await waitForInviteAndJoin(ns, faction);
+  return ns.exec('/utils/backdoor.js', 'home', 1, '--target', host);
 }
+
 
 async function joinCity(ns: NS, city: CityName, amount: number) {
   while (!ns.singularity.travelToCity(city)) {
@@ -274,13 +241,6 @@ async function joinCity(ns: NS, city: CityName, amount: number) {
   }
   await waitForMoney(ns, amount);
   await waitForInviteAndJoin(ns, city);
-}
-
-export async function waitForInviteAndJoin(ns: NS, faction: string) {
-  while (!ns.singularity.checkFactionInvitations().includes(faction)) {
-    await ns.sleep(second_ms);
-  }
-  ns.singularity.joinFaction(faction);
 }
 
 export async function joinFaction(ns: NS, faction: string) {
