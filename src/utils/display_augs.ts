@@ -1,7 +1,6 @@
-// @ts-ignore
-import { getAugmentationList } from "/scripts/augment.js";
+import { NS } from '@ns';
+import { getAugmentationList } from './Augment';
 
-/** @param {import(".").NS } ns */
-export async function main(ns) {
-    ns.tprint(getAugmentationList(ns))
- }
+export async function main(ns: NS) {
+  ns.tprint(getAugmentationList(ns));
+}

@@ -21,3 +21,19 @@ export class Augmentation {
     ns.singularity.purchaseAugmentation(this.faction, this.name);
   }
 }
+
+export function getAugmentationList(ns: NS) {
+  const factions = ns.getPlayer().factions;
+  const augs: Augmentation[] = [];
+  const my_augs = ns.singularity.getOwnedAugmentations(true);
+  for (const f of factions) {
+    const aug_list = ns.singularity.getAugmentationsFromFaction(f);
+    for (const a of aug_list) {
+      if (!my_augs.includes(a)) augs.push(new Augmentation(ns, f, a));
+    }
+  }
+
+  const s = JSON.stringify(augs, null, 1);
+  ns.write('/data/augmentation_list.json.txt', s, 'w');
+  return augs;
+}
