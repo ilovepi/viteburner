@@ -225,6 +225,8 @@ async function joinSlumSnakes(ns: NS) {
 async function joinTetrads(ns: NS) {
   return joinGang(ns, FactionToName(Factions.crime.tetrads), ns.enums.CityName.Chongqing, 75, 1, -18, 1);
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function joinSilhouette(ns: NS) {
   // We currently can't join this until we finish corptocracy bitnodes
   // return joinGang(ns, FactionToName(Factions.crime.slumsnakes), ns.enums.CityName.Chongqing, 30, 1e6, -9, 1);
@@ -241,12 +243,15 @@ async function joinSyndicate(ns: NS) {
 }
 
 // TODO: End game factions ...
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function joinCovenant(ns: NS) {
   return 0;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function joinDeaedalus(ns: NS) {
   return 0;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function joinIlluminati(ns: NS) {
   return 0;
 }
@@ -337,6 +342,7 @@ export async function doFactionJob(ns: NS, faction: string, focus: boolean) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function faction_contains(obj: any, item: any) {
   return Object.values(obj).includes(item);
 }
