@@ -82,3 +82,9 @@ export async function waitForPidAndJoin(ns: NS, pid: number, faction: string) {
   }
   await waitForInviteAndJoin(ns, faction);
 }
+
+export function distributeHackingScripts(ns: NS, host: string) {
+  const home = 'home';
+  const scripts = ['/hacking/hack.js', '/hacking/grow.js', '/hacking/weaken.js'];
+  ns.scp(scripts, host, home);
+}
