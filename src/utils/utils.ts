@@ -30,6 +30,11 @@ export function breakPorts(ns: NS, hostname: string) {
   if (ns.fileExists('SQLInject.exe', home)) ns.sqlinject(hostname);
 }
 
+export function nuke(ns: NS, host: string) {
+  breakPorts(ns, host);
+  ns.nuke(host);
+}
+
 export function crack_counts(ns: NS) {
   let count = 0;
   const files = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe', 'HTTPWorm.exe', 'SQLInject.exe'];
