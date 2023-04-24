@@ -21,7 +21,7 @@ export async function main(ns: NS) {
     did_buy = false;
     const factions = ns.getPlayer().factions;
     const faction = factions.sort((a, b) => {
-      return ns.singularity.getFactionRep(b) <= ns.singularity.getFactionRep(a);
+      return ns.singularity.getFactionRep(b) - ns.singularity.getFactionRep(a);
     })[0];
 
     const augs = ns.singularity.getAugmentationsFromFaction(faction);
@@ -35,7 +35,7 @@ export async function main(ns: NS) {
     await ns.sleep(1);
   } while (did_buy && price < money && money > 1e6);
 
-  const pid = ns.exec('/scripts/backdoor.js', 'home');
+  const pid = ns.exec('/utils/backdoor_all.js', 'home');
   while (ns.isRunning(pid)) {
     // sleep for 30 seconds and check again
     await ns.sleep(30_000);
