@@ -1,7 +1,5 @@
-import { Factions, doFactionJob, getAllFactions, joinFaction } from '@/factions/Faction';
-import { minute_ms } from '@/utils/consts';
+import { doFactionJob, getAllFactions, joinFaction } from '@/factions/Faction';
 import { NS } from '@ns';
-import { time, timeStamp } from 'console';
 
 export class Manager {
   ns: NS;
@@ -29,7 +27,6 @@ export class Manager {
     }
     return 'none';
   }
-
 
   async doNextTask() {
     const faction = this.findNextFaction();

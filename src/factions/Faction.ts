@@ -1,6 +1,4 @@
 import { Augmentation } from '@/utils/Augment';
-import { minute_ms, second_ms } from '@/utils/consts';
-import { waitForHackingLevel, waitForInviteAndJoin, waitForMoney, waitForPidAndJoin } from '@/utils/utils';
 import { CityName, NS } from '@ns';
 
 export enum early {
