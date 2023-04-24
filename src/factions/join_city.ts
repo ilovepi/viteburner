@@ -17,9 +17,9 @@ export async function main(ns: NS) {
   ]);
   if (args.help) {
     ns.tprint('Travel to a city and try to join their faction');
-    ns.tprint(`Usage: run ${ns.getScriptName()} SERVER`);
+    ns.tprint(`Usage: run ${ns.getScriptName()} --city CITY --money MONEY`);
     ns.tprint(`Example:`);
-    ns.tprint(`> run ${ns.getScriptName()} --target n00dles`);
+    ns.tprint(`> run ${ns.getScriptName()} --city Aevum --money 1000000`);
     return;
   }
 
@@ -33,5 +33,5 @@ export async function main(ns: NS) {
   ]);
   const city = CityMap.get(args.city.toString());
   if (city === undefined) return;
-  await joinCity(ns, city, args.money);
+  await joinCity(ns, city, args.money as number);
 }

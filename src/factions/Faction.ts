@@ -38,7 +38,7 @@ export enum corporations {
 }
 
 export enum crime {
-  slimsnakes = 22,
+  slumsnakes = 22,
   tetrads,
   silhouette,
   speakers,
@@ -148,23 +148,11 @@ const FactionPrereqs = new Map([
 ]);
 
 async function joinCybersec(ns: NS) {
-  // get min hacking
-  await waitForHackingLevel(ns, 50);
-  // backdoor csec server
-  ns.exec('/utils/backdoor.js', 'home');
+  return joinHacking(ns, 'CSEC', FactionToName(early.cybersec));
 }
 
 async function joinTiaDiHui(ns: NS) {
-  // hacking >50
-  await waitForHackingLevel(ns, 50);
-
-  // accumulate $1M
-  await waitForMoney(ns, 1_000_000);
-
-  // be in chongqing, newtokyo, ishima
-  ns.singularity.travelToCity(ns.enums.CityName.Chongqing);
-  await ns.sleep(minute_ms);
-  ns.singularity.joinFaction(FactionToName(Factions.early.tiandihui));
+  return ns.exec('/factions/join_tia_di_hui.js', 'home');
 }
 
 async function joinNetburners(ns: NS) {
@@ -173,74 +161,136 @@ async function joinNetburners(ns: NS) {
 
 // cities
 async function joinAevum(ns: NS) {
-  await joinCity(ns, ns.enums.CityName.Aevum, 40 * 10e6);
+  return joinCity(ns, ns.enums.CityName.Aevum, 40 * 10e6);
 }
 async function joinVolhaven(ns: NS) {
-  await joinCity(ns, ns.enums.CityName.Volhaven, 50 * 10e6);
+  return joinCity(ns, ns.enums.CityName.Volhaven, 50 * 10e6);
 }
 async function joinChongqing(ns: NS) {
-  await joinCity(ns, ns.enums.CityName.Chongqing, 20 * 10e6);
+  return joinCity(ns, ns.enums.CityName.Chongqing, 20 * 10e6);
 }
 async function joinSector12(ns: NS) {
-  await joinCity(ns, ns.enums.CityName.Sector12, 15 * 10e6);
+  return joinCity(ns, ns.enums.CityName.Sector12, 15 * 10e6);
 }
 async function joinNeoTokyo(ns: NS) {
-  await joinCity(ns, ns.enums.CityName.NewTokyo, 20 * 10e6);
+  return joinCity(ns, ns.enums.CityName.NewTokyo, 20 * 10e6);
 }
 async function joinIshima(ns: NS) {
-  await joinCity(ns, ns.enums.CityName.NewTokyo, 30 * 10e6);
+  return joinCity(ns, ns.enums.CityName.NewTokyo, 30 * 10e6);
 }
 
 async function joinNiteSec(ns: NS) {
-  await joinHacking(ns, 'avmnite-02h', FactionToName(Factions.hacking.nitsec));
+  return joinHacking(ns, 'avmnite-02h', FactionToName(Factions.hacking.nitsec));
 }
 async function joinBlackHand(ns: NS) {
-  await joinHacking(ns, 'I.I.I.I', FactionToName(Factions.hacking.blackhand));
+  return joinHacking(ns, 'I.I.I.I', FactionToName(Factions.hacking.blackhand));
 }
 async function joinBitRunners(ns: NS) {
-  await joinHacking(ns, 'run4theh111z', FactionToName(Factions.hacking.bitrunners));
+  return joinHacking(ns, 'run4theh111z', FactionToName(Factions.hacking.bitrunners));
 }
 
-async function joinMegaCorp(ns: NS) {}
-async function joinEcorp(ns: NS) {}
-async function joinKuaiGong(ns: NS) {}
-async function joinFourSigma(ns: NS) {}
-async function joinNWO(ns: NS) {}
-async function joinBlade(ns: NS) {}
-async function joinOmnitek(ns: NS) {}
-async function joinBachman(ns: NS) {}
-async function joinClarke(ns: NS) {}
-async function joinFulcrum(ns: NS) {}
+async function joinMegaCorp(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.megacorp));
+}
+async function joinEcorp(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.ecorp));
+}
+async function joinKuaiGong(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.kuagon));
+}
+async function joinFourSigma(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.foursigma));
+}
+async function joinNWO(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.nwo));
+}
+async function joinBlade(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.bladeindustries));
+}
+async function joinOmnitek(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.omnitek));
+}
+async function joinBachman(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.bachman));
+}
+async function joinClarke(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.clarke));
+}
+async function joinFulcrum(ns: NS) {
+  return joinCorp(ns, FactionToName(corporations.fulcrum));
+}
 
 // gangs
-async function joinSlumSnakes(ns: NS) {}
-async function joinTetrads(ns: NS) {}
-async function joinSilhouette(ns: NS) {}
-async function joinSpeakers(ns: NS) {}
-async function joinDarkArmy(ns: NS) {}
-async function joinSyndicate(ns: NS) {}
-async function joinCovenant(ns: NS) {}
-async function joinDeaedalus(ns: NS) {}
-async function joinIlluminati(ns: NS) {}
+async function joinSlumSnakes(ns: NS) {
+  return joinGang(ns, FactionToName(Factions.crime.slumsnakes), ns.enums.CityName.Chongqing, 30, 1e6, -9, 1);
+}
+async function joinTetrads(ns: NS) {
+  return joinGang(ns, FactionToName(Factions.crime.tetrads), ns.enums.CityName.Chongqing, 75, 1, -18, 1);
+}
+async function joinSilhouette(ns: NS) {
+  // We currently can't join this until we finish corptocracy bitnodes
+  // return joinGang(ns, FactionToName(Factions.crime.slumsnakes), ns.enums.CityName.Chongqing, 30, 1e6, -9, 1);
+  return 0;
+}
+async function joinSpeakers(ns: NS) {
+  return joinGang(ns, FactionToName(Factions.crime.speakers), ns.enums.CityName.Chongqing, 300, 1, -45, 100);
+}
+async function joinDarkArmy(ns: NS) {
+  return joinGang(ns, FactionToName(Factions.crime.darkarmy), ns.enums.CityName.Chongqing, 300, 1, -45, 300);
+}
+async function joinSyndicate(ns: NS) {
+  return joinGang(ns, FactionToName(Factions.crime.syndicate), ns.enums.CityName.Aevum, 200, 10e6, -90, 200);
+}
+
+// TODO: End game factions ...
+async function joinCovenant(ns: NS) {
+  return 0;
+}
+async function joinDeaedalus(ns: NS) {
+  return 0;
+}
+async function joinIlluminati(ns: NS) {
+  return 0;
+}
+
+async function joinGang(
+  ns: NS,
+  gang: string,
+  city: string,
+  combat: number,
+  money: number,
+  karma: number,
+  hacking: number,
+) {
+  return ns.exec(
+    '/factions/work_at_corp.js',
+    'home',
+    1,
+    '--gang',
+    gang,
+    '--city',
+    city,
+    '--combat',
+    combat,
+    '--money',
+    money,
+    '--karma',
+    karma,
+    '--hacking',
+    hacking,
+  );
+}
 
 async function joinCorp(ns: NS, corp: string) {
   return ns.exec('/factions/work_at_corp.js', 'home', 1, '--company', corp);
 }
 
 async function joinHacking(ns: NS, host: string, faction: string) {
-  while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(host)) {
-    await ns.sleep(second_ms);
-  }
-  return ns.exec('/utils/backdoor.js', 'home', 1, '--target', host);
+  return ns.exec('factions/join_hacking.js', 'home', 1, '--target', host, '--name', faction);
 }
 
-
 async function joinCity(ns: NS, city: CityName, amount: number) {
-  while (!ns.singularity.travelToCity(city)) {
-    await ns.sleep(100);
-  }
-  await waitForMoney(ns, amount);
-  await waitForInviteAndJoin(ns, city);
+  return ns.exec('factions/join_city.js', 'home', 1, '--city', city, '--money', amount);
 }
 
 export async function joinFaction(ns: NS, faction: string) {
