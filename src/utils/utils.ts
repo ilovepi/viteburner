@@ -48,7 +48,7 @@ export function can_hack(ns: NS, target: string) {
   const rootable = can_root(ns, target);
   const hacking_ability = ns.getHackingLevel();
   const required_level = ns.getServerRequiredHackingLevel(target);
-  return required_level < hacking_ability && rootable;
+  return required_level <= hacking_ability && rootable;
 }
 
 export function can_root(ns: NS, target: string) {
@@ -70,15 +70,19 @@ export async function waitForMoney(ns: NS, amount: number) {
 }
 
 export async function waitForInviteAndJoin(ns: NS, faction: string) {
-  while (!ns.singularity.checkFactionInvitations().includes(faction)) {
+  const start = performance.now();
+  while (!ns.getPlayer().factions.includes(faction) && !ns.singularity.checkFactionInvitations().includes(faction)) {
     await ns.sleep(second_ms);
+    ns.print(`Invite cumulative wait: ${performance.now() - start} ms`);
   }
   ns.singularity.joinFaction(faction);
 }
 
 export async function waitForPidAndJoin(ns: NS, pid: number, faction: string) {
+  const start = performance.now();
   while (ns.isRunning(pid)) {
     await ns.sleep(second_ms);
+    ns.print(`PID cumulative wait: ${performance.now() - start} ms`);
   }
   await waitForInviteAndJoin(ns, faction);
 }

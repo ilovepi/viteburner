@@ -24,7 +24,7 @@ export async function main(ns: NS) {
     hacknet.purchaseNode();
   }
   // 100 hacknet levels
-  await waitForMoney(ns, hacknet.getLevelUpgradeCost(0, 3));
+  await waitForMoney(ns, hacknet.getLevelUpgradeCost(0, 100));
   hacknet.upgradeLevel(0, 100);
   // 8GM RAM in hacknet
   await waitForMoney(ns, hacknet.getRamUpgradeCost(0, 3));

@@ -1,4 +1,4 @@
-import { Augmentation } from '@/utils/Augment';
+import { default_opts } from '@/utils/consts';
 import { CityName, NS } from '@ns';
 
 export enum early {
@@ -9,7 +9,7 @@ export enum early {
 
 export enum city {
   sector12 = 3,
-  chonghicng,
+  chongching,
   newtokyo,
   ishima,
   aevum,
@@ -25,7 +25,7 @@ export enum hacking {
 export enum corporations {
   ecorp = 12,
   megacorp,
-  kuagon,
+  kuaigon,
   foursigma,
   nwo,
   bladeindustries,
@@ -174,7 +174,7 @@ async function joinNeoTokyo(ns: NS) {
   return joinCity(ns, ns.enums.CityName.NewTokyo, 20 * 10e6);
 }
 async function joinIshima(ns: NS) {
-  return joinCity(ns, ns.enums.CityName.NewTokyo, 30 * 10e6);
+  return joinCity(ns, ns.enums.CityName.Ishima, 30 * 10e6);
 }
 
 async function joinNiteSec(ns: NS) {
@@ -194,7 +194,7 @@ async function joinEcorp(ns: NS) {
   return joinCorp(ns, FactionToName(corporations.ecorp));
 }
 async function joinKuaiGong(ns: NS) {
-  return joinCorp(ns, FactionToName(corporations.kuagon));
+  return joinCorp(ns, FactionToName(corporations.kuaigon));
 }
 async function joinFourSigma(ns: NS) {
   return joinCorp(ns, FactionToName(corporations.foursigma));
@@ -285,64 +285,18 @@ async function joinGang(
 }
 
 async function joinCorp(ns: NS, corp: string) {
-  return ns.exec('/factions/work_at_corp.js', 'home', 1, '--company', corp);
+  return ns.exec('/factions/work_at_corp.js', 'home', default_opts(), '--company', corp);
 }
 
 async function joinHacking(ns: NS, host: string, faction: string) {
-  return ns.exec('factions/join_hacking.js', 'home', 1, '--target', host, '--name', faction);
+  return ns.exec('factions/join_hacking.js', 'home', default_opts(), '--target', host, '--name', faction);
 }
 
 async function joinCity(ns: NS, city: CityName, amount: number) {
-  return ns.exec('factions/join_city.js', 'home', 1, '--city', city, '--money', amount);
+  return ns.exec('factions/join_city.js', 'home', default_opts(), '--city', city, '--money', amount);
 }
 
 export async function joinFaction(ns: NS, faction: string) {
-  await FactionPrereqs.get(faction)?.(ns);
-}
-
-export async function doFactionJob(ns: NS, faction: string, focus: boolean) {
-  const aug_list = ns.singularity.getAugmentationsFromFaction(faction);
-  const augs = [];
-  for (const a of aug_list) {
-    if (!ns.singularity.getOwnedAugmentations(true).includes(a)) augs.push(new Augmentation(ns, faction, a));
-  }
-
-  for (const a of augs) {
-    let have_prereq = true;
-    for (const p of a.prereqs) {
-      if (!ns.singularity.getOwnedAugmentations(true).includes(p)) {
-        have_prereq = false;
-        break;
-      }
-    }
-
-    if (!have_prereq) {
-      continue;
-    }
-
-    const wt = ns.enums.FactionWorkType;
-    let work_type = wt.security;
-    const faction_idx = NameToFaction(faction);
-
-    if (
-      faction_contains(Factions.corporations, faction_idx) ||
-      faction_contains(Factions.hacking, faction_idx) ||
-      faction_contains(Factions.early, faction_idx)
-    ) {
-      work_type = wt.hacking;
-    } else if (faction_contains(Factions.crime, faction_idx)) {
-      work_type = wt.field;
-    }
-
-    ns.singularity.workForFaction(faction, work_type, focus);
-    // work for faction until we have the necessary rep
-    while (ns.singularity.getFactionRep(faction) < a.reputation) {
-      await ns.sleep(1000 * 60);
-    }
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function faction_contains(obj: any, item: any) {
-  return Object.values(obj).includes(item);
+  const pid = FactionPrereqs.get(faction)?.(ns);
+  return pid === undefined ? 0 : pid;
 }

@@ -2,6 +2,7 @@ import { ServerData } from '@/servers/ServerData';
 import { ServerHackAnalysis } from '@/servers/ServerHackAnalysis';
 import { NS } from '@ns';
 import { Scripts } from './hacking_constants';
+import { default_opts } from '@/utils/consts';
 
 const hack_ratio = 0.1;
 
@@ -53,17 +54,24 @@ export function runScript(
 ) {
   const pids: number[] = [];
   for (const server of workers) {
+    // we're done
+    if (weaken_threads < 1) break;
     const avail_threads = getAvailibleThreads(ns, server, script_ram);
-    let threads_used;
-    if (avail_threads > weaken_threads) {
+    // we can't run jack
+    if (avail_threads < 1) continue;
+    if (avail_threads >= weaken_threads) {
       // we have enough memory to run everything else, so just run them all
-      threads_used = weaken_threads;
-    } else {
-      // run as much as we can and let the other workers handle the rest...
-      weaken_threads -= avail_threads;
-      threads_used = avail_threads;
+      const opts = default_opts();
+      opts.threads = weaken_threads;
+      pids.push(ns.exec(script, server.name, opts, ...getExploitArg(target, 0, sleep_time)));
+      return pids;
     }
-    pids.push(ns.exec(script, server.name, threads_used, ...getExploitArg(target, 0, sleep_time)));
+
+    // run as much as we can and let the other workers handle the rest...
+    weaken_threads -= avail_threads;
+    const opts = default_opts();
+    opts.threads = avail_threads;
+    pids.push(ns.exec(script, server.name, opts, ...getExploitArg(target, 0, sleep_time)));
   }
   return pids;
 }
@@ -73,7 +81,8 @@ export function getExploitArg(target: string, delay: number, sleep_time: number)
 }
 
 export function getAvailibleRam(ns: NS, server: ServerData) {
-  return server.ram - ns.getServerUsedRam(server.name);
+  const scale = server.name === 'home' ? 0.8 : 1;
+  return Math.floor((server.ram - ns.getServerUsedRam(server.name)) * scale);
 }
 
 export function getAvailibleThreads(ns: NS, server: ServerData, script_ram: number) {

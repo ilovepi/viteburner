@@ -1,4 +1,5 @@
-import { doFactionJob, getAllFactions, joinFaction } from '@/factions/Faction';
+import { getAllFactions, joinFaction } from '@/factions/Faction';
+import { default_opts } from '@/utils/consts';
 import { NS } from '@ns';
 
 export class Manager {
@@ -15,6 +16,18 @@ export class Manager {
     if (money > ram_cost) this.ns.singularity.upgradeHomeRam();
   }
 
+  UpgradeCores() {
+    // may need to wait here if we wanto to loop forever
+    const host = 'home';
+    const money = this.ns.getServerMoneyAvailable(host);
+    const ram_cost = this.ns.singularity.getUpgradeHomeCoresCost();
+    if (money > ram_cost) this.ns.singularity.upgradeHomeCores();
+  }
+
+  purchaseServers() {
+    return this.ns.exec('/servers/server_upgrade.js', 'home', default_opts(), '--loop');
+  }
+
   findNextFaction() {
     const factions = getAllFactions();
     for (const f of factions) {
@@ -22,31 +35,68 @@ export class Manager {
       const my_augs = this.ns.singularity.getOwnedAugmentations(true);
       const fact_augs = this.ns.singularity.getAugmentationsFromFaction(f);
       if (fact_augs.some((a) => !my_augs.includes(a))) {
+        this.ns.print(`Found Faction: ${f}`);
         return f;
       }
     }
+    this.ns.print(`No Factions Availible...`);
     return 'none';
   }
 
   async doNextTask() {
+    this.ns.print('Find Next Task');
     const faction = this.findNextFaction();
-    await joinFaction(this.ns, faction);
-    await doFactionJob(this.ns, faction, true);
+    const pid = await joinFaction(this.ns, faction);
+    return this.ns.exec('/factions/do_faction_job.js', 'home', default_opts(), '--faction', faction, '--pid', pid);
   }
 
   async run(loop: boolean) {
+    let hacking_pid = 0;
+    let current_task = 0;
+    let server_upgrade = 0;
+    let task_complete = false;
+    let task_started = false;
     // main loop
     do {
+      if (!this.ns.isRunning(hacking_pid)) {
+        hacking_pid = this.hacking();
+      }
+
       this.buyPrograms();
       this.UpgradeRam();
-      // this.upgradeServers();
-      await this.doNextTask();
+      this.UpgradeCores();
+
+      if (!this.ns.isRunning(server_upgrade)) {
+        server_upgrade = this.purchaseServers();
+      }
+
+      if (!this.ns.isRunning(current_task)) {
+        do {
+          this.ns.print('Start looking for new Task');
+          current_task = await this.doNextTask();
+        } while (current_task == 0 && (await this.ns.sleep(50)));
+        if (task_started) task_complete = true;
+        task_started = true;
+      } else if (task_complete && task_started) {
+        this.ns.print('Tasks Complete');
+        break;
+      }
       await this.ns.sleep(1000);
-    } while (loop);
+    } while (loop && !task_complete);
+    this.ns.kill(server_upgrade);
+    this.augment();
+  }
+  hacking() {
+    return this.ns.exec('/hacking/early_game_hacking.js', 'home', default_opts());
+  }
+
+  augment() {
+    this.ns.print('Start Augmentation');
+    return this.ns.exec('/utils/purchase_augmentations.js', 'home', default_opts());
   }
 
   buyPrograms() {
-    return this.ns.exec('/utils/buy_programs.js', 'home');
+    return this.ns.exec('/utils/buy_programs.js', 'home', default_opts());
   }
 }
 
