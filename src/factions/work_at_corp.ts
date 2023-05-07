@@ -28,7 +28,8 @@ export async function main(ns: NS) {
       await ns.sleep(60 * 1000);
     }
   }
-  if (ns.singularity.getCompanyRep(corp) < required_rep) await waitForInviteAndJoin(ns, corp);
+  if (ns.singularity.getCompanyRep(corp) >= required_rep || ns.singularity.checkFactionInvitations().includes(corp))
+    await waitForInviteAndJoin(ns, corp);
 }
 
 function shouldWorkAtCompany(ns: NS, company: string) {

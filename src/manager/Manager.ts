@@ -1,4 +1,4 @@
-import { getAllFactions, joinFaction } from '@/factions/Faction';
+import { FactionToName, crime, getAllFactions, joinFaction } from '@/factions/Faction';
 import { default_opts } from '@/utils/consts';
 import { NS } from '@ns';
 
@@ -31,6 +31,7 @@ export class Manager {
   findNextFaction() {
     const factions = getAllFactions();
     for (const f of factions) {
+      if (f === FactionToName(crime.silhouette)) continue;
       // this faction is only a candidate if we don't have all their augments
       const my_augs = this.ns.singularity.getOwnedAugmentations(true);
       const fact_augs = this.ns.singularity.getAugmentationsFromFaction(f);

@@ -17,7 +17,7 @@ export async function main(ns: NS) {
     await ns.sleep(1);
   }
 
-  let did_buy;
+  let did_buy: boolean;
   do {
     did_buy = false;
     const factions = ns.getPlayer().factions;
@@ -25,13 +25,13 @@ export async function main(ns: NS) {
       return ns.singularity.getFactionRep(b) - ns.singularity.getFactionRep(a);
     })[0];
 
-    const augs = ns.singularity.getAugmentationsFromFaction(faction);
+    const augs = ns.singularity
+      .getAugmentationsFromFaction(faction)
+      .filter((a) => !ns.singularity.getOwnedAugmentations().includes(a));
     for (const x of augs) {
       price = ns.singularity.getAugmentationPrice(x);
       funds = ns.getServerMoneyAvailable('home');
-      if (price < funds) {
-        did_buy = ns.singularity.purchaseAugmentation(faction, x);
-      }
+      did_buy = ns.singularity.purchaseAugmentation(faction, x) || did_buy;
     }
     await ns.sleep(1);
   } while (did_buy && price < funds && funds > 1e6);

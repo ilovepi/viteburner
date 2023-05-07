@@ -6,14 +6,14 @@ import { default_opts } from '@/utils/consts';
 
 const hack_ratio = 0.1;
 
-export function attackServer(ns: NS, target: ServerData, workers: ServerData[]) {
+export function attackServer(ns: NS, target: ServerData, workers: ServerData[], ratio: number = hack_ratio) {
   // handle weaken first
   const script_ram = 1.75;
   const script = Scripts.weaken;
   const delta = 50;
   const grow_delay = target.weaken_time - target.grow_time;
   const hack_delay = target.weaken_time - target.hack_time;
-  const attack_data = new ServerHackAnalysis(ns, target, hack_ratio);
+  const attack_data = new ServerHackAnalysis(ns, target, ratio);
 
   const pids: number[] = [];
   pids.push(...runScript(target.name, workers, ns, 1.7, attack_data.threads.hack, Scripts.hack, hack_delay + delta));

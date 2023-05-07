@@ -4,6 +4,7 @@ import { Augmentation } from '@/utils/Augment';
 import { NameToFaction, Factions } from './Faction';
 
 export async function main(ns: NS) {
+  ns.disableLog('sleep');
   const args = ns.flags([
     ['faction', 'CSEC'],
     ['pid', 0],
@@ -17,11 +18,13 @@ export async function main(ns: NS) {
     ns.tprint(`> run ${ns.getScriptName()} --faction CSEC`);
     return;
   }
+  const start = performance.now();
   while (ns.isRunning(args.pid as number)) {
     await ns.sleep(minute_ms);
   }
-
-  await doFactionJob(ns, args.faction.toString(), true);
+  ns.print(`PID cumulative wait: ${performance.now() - start} ms`);
+  const focus = !ns.singularity.getOwnedAugmentations().includes('Neuroreceptor Management Implant');
+  await doFactionJob(ns, args.faction.toString(), focus);
 }
 
 export async function doFactionJob(ns: NS, faction: string, focus: boolean) {
@@ -51,10 +54,10 @@ export async function doFactionJob(ns: NS, faction: string, focus: boolean) {
     // work for faction until we have the necessary rep
     ns.print(`Working towards ${a.name}...`);
     while (ns.singularity.getFactionRep(faction) < a.reputation) {
-      await ns.sleep(1000 * 60);
+      await ns.sleep(minute_ms);
     }
   }
-  ns.print(`Acheeived reputation for all Faction Augments...`);
+  ns.print(`Acheived reputation for all Faction Augments...`);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -34,9 +34,10 @@ export async function main(ns: NS) {
     await ns.sleep(100);
   }
   const gang = args.gang.toString();
+  const focus = !ns.singularity.getOwnedAugmentations().includes('Neuroreceptor Management Implant');
   // karma just kill people ... we'll get bad karma and raise the kill count ...
-  while (!ns.singularity.checkFactionInvitations().includes(gang)) {
-    await ns.sleep(ns.singularity.commitCrime(ns.enums.CrimeType.homicide));
+  while (!ns.singularity.checkFactionInvitations().includes(gang) && !ns.getPlayer().factions.includes(gang)) {
+    await ns.sleep(ns.singularity.commitCrime(ns.enums.CrimeType.homicide, focus));
   }
   ns.singularity.joinFaction(gang);
 }

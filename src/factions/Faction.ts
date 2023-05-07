@@ -22,8 +22,17 @@ export enum hacking {
   bitrunners,
 }
 
+export enum crime {
+  slumsnakes = 12,
+  tetrads,
+  silhouette,
+  speakers,
+  darkarmy,
+  syndicate,
+}
+
 export enum corporations {
-  ecorp = 12,
+  ecorp = 18,
   megacorp,
   kuaigon,
   foursigma,
@@ -33,15 +42,6 @@ export enum corporations {
   bachman,
   clarke,
   fulcrum,
-}
-
-export enum crime {
-  slumsnakes = 22,
-  tetrads,
-  silhouette,
-  speakers,
-  darkarmy,
-  syndicate,
 }
 
 export enum endgame {
@@ -64,6 +64,7 @@ const facts: string[] = [
   'CyberSec',
   'Tian Di Hui',
   'Netburners',
+
   //city
   'Sector-12',
   'Chongqing',
@@ -71,10 +72,20 @@ const facts: string[] = [
   'Ishima',
   'Aevum',
   'Volhaven',
+
   // hacking
   'NiteSec',
   'The Black Hand',
   'BitRunners',
+
+  // gangs
+  'Slum Snakes',
+  'Tetrads',
+  'Silhouette',
+  'Speakers for the Dead',
+  'The Dark Army',
+  'The Syndicate',
+
   // corps
   'ECorp',
   'MegaCorp',
@@ -86,13 +97,7 @@ const facts: string[] = [
   'Bachman & Associates',
   'Clarke Incorporated',
   'Fulcrum Secret Technologies',
-  // gangs
-  'Slum Snakes',
-  'Tetrads',
-  'Silhouette',
-  'Speakers for the Dead',
-  'The Dark Army',
-  'The Syndicate',
+
   //endgame
   'The Covenant',
   'Daedalus',
@@ -266,7 +271,7 @@ async function joinGang(
   hacking: number,
 ) {
   return ns.exec(
-    '/factions/work_at_corp.js',
+    '/factions/join_gang.js',
     'home',
     1,
     '--gang',
