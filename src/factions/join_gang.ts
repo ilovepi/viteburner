@@ -1,6 +1,6 @@
 import { CityName, NS } from '@ns';
-import { waitForInviteAndJoin, waitForMoney, waitForPidAndJoin } from '@/utils/utils';
-import { minute_ms, second_ms } from '@/utils/consts';
+import { waitForMoney } from '@/utils/utils';
+import { minute_ms } from '@/utils/consts';
 
 export async function main(ns: NS) {
   const args = ns.flags([

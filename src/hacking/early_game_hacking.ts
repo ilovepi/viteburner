@@ -22,7 +22,7 @@ export async function main(ns: NS) {
   }
 
   let running_prep: Map<string, number[]> = new Map();
-  const target = args.target.toString();
+  // const target = args.target.toString();
   ns.tail();
   do {
     ns.print('Scanning all servers...');
